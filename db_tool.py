@@ -32,12 +32,22 @@ class Db_Engine:
         return 'success'
 
 
-    def db_insert_values(self,year,month,tuketim,fatura_mik,fatura_tip,alt_fatura):
+    # def db_insert_values(self,year,month,tuketim,fatura_mik,fatura_tip,alt_fatura):
+    #     db_sql_insert_query="""
+    #     INSERT INTO BILL(yil,ay,tuketim_miktari,fatura_tutari,fatura_tipi,alt_fatura_tipi)
+    #     VALUES (?, ?, ?,?,?,?)
+    #     """
+    #     db_sql_insert_values=(year,month,tuketim,fatura_mik,fatura_tip,alt_fatura)
+    #     self.db_cursor.execute(db_sql_insert_query,db_sql_insert_values)
+    #     self.db.commit()
+    #     return 'success'
+
+    def db_insert_values(self,bill_dict):
         db_sql_insert_query="""
         INSERT INTO BILL(yil,ay,tuketim_miktari,fatura_tutari,fatura_tipi,alt_fatura_tipi) 
         VALUES (?, ?, ?,?,?,?)
         """
-        db_sql_insert_values=(year,month,tuketim,fatura_mik,fatura_tip,alt_fatura)
+        db_sql_insert_values=(bill_dict.year,bill_dict.month,int(bill_dict.consume),int(bill_dict.price),bill_dict.billof,bill_dict.billoftype)
         self.db_cursor.execute(db_sql_insert_query,db_sql_insert_values)
         self.db.commit()
         return 'success'
@@ -48,8 +58,15 @@ class Db_Engine:
         # select_query=f"""SELECT * FROM BILL """
         self.db_cursor.execute(select_query,(yil,fatura_tipi))
         values=self.db_cursor.fetchall()
-        print(values)
-        return values
+        # print(values)
+        return_value={}
+        for i in range(len(values)):
+            return_value[i]={'tuketim_miktari':values[i][0],
+                      'fatura_tutari':values[i][1],
+                      'alt_fatura_tipi':values[i][2]
+                      }
+
+        return return_value
 
 
     @property
