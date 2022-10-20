@@ -54,16 +54,17 @@ class Db_Engine:
 
     def db_getvalues(self,fatura_tipi,yil):
         #select_query=f"""SELECT tuketim_miktari,fatura_tutari,alt_fatura_tipi FROM BILL WHERE(yil={yil} and fatura_tipi='{fatura_tipi}')"""
-        select_query=f"""SELECT tuketim_miktari,fatura_tutari,alt_fatura_tipi FROM BILL WHERE(yil=? and fatura_tipi=?)"""
+        select_query=f"""SELECT ay,tuketim_miktari,fatura_tutari,alt_fatura_tipi FROM BILL WHERE(yil=? and fatura_tipi=?)"""
         # select_query=f"""SELECT * FROM BILL """
         self.db_cursor.execute(select_query,(yil,fatura_tipi))
         values=self.db_cursor.fetchall()
         # print(values)
         return_value={}
         for i in range(len(values)):
-            return_value[i]={'tuketim_miktari':values[i][0],
-                      'fatura_tutari':values[i][1],
-                      'alt_fatura_tipi':values[i][2]
+            return_value[i]={'ay':values[i][0],
+                'tuketim_miktari':values[i][1],
+                      'fatura_tutari':values[i][2],
+                      'alt_fatura_tipi':values[i][3]
                       }
 
         return return_value
