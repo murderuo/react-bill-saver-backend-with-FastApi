@@ -20,13 +20,16 @@ class Db_Engine:
 
 
     def db_create_table(self):
+        ''' year:str     month:str      consume:str     price:str     billof:str     billoftype:str'''
+
         sql_query="""CREATE TABLE IF NOT EXISTS BILL (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        yil INTEGER,ay VARCHAR,
-        tuketim_miktari	INTEGER,
-        fatura_tutari	INTEGER,
-        fatura_tipi	VARCHAR,
-        alt_fatura_tipi	VARCHAR)
+        year VARCHAR,
+        month VARCHAR,
+        consume	VARCHAR,
+        price	VARCHAR,
+        billof	VARCHAR,
+        billoftype	VARCHAR)
         """
         self.db_cursor.execute(sql_query)
         return 'success'
@@ -43,18 +46,20 @@ class Db_Engine:
     #     return 'success'
 
     def db_insert_values(self,bill_dict):
+        print(bill_dict)
         db_sql_insert_query="""
-        INSERT INTO BILL(yil,ay,tuketim_miktari,fatura_tutari,fatura_tipi,alt_fatura_tipi) 
+        INSERT INTO BILL(year,month,consume,price,billof,billoftype) 
         VALUES (?, ?, ?,?,?,?)
         """
-        db_sql_insert_values=(bill_dict.year,bill_dict.month,int(bill_dict.consume),int(bill_dict.price),bill_dict.billof,bill_dict.billoftype)
+        # db_sql_insert_values=(bill_dict['year'],bill_dict['month'],bill_dict['consume'],bill_dict['price'],bill_dict['billof'],bill_dict['billoftype'])
+        db_sql_insert_values=(bill_dict.year,bill_dict.month,bill_dict.consume,bill_dict.price,bill_dict.billof,bill_dict.billoftype)
         self.db_cursor.execute(db_sql_insert_query,db_sql_insert_values)
         self.db.commit()
         return 'success'
 
     def db_getvalues(self,fatura_tipi,yil):
         #select_query=f"""SELECT tuketim_miktari,fatura_tutari,alt_fatura_tipi FROM BILL WHERE(yil={yil} and fatura_tipi='{fatura_tipi}')"""
-        select_query=f"""SELECT ay,tuketim_miktari,fatura_tutari,alt_fatura_tipi FROM BILL WHERE(yil=? and fatura_tipi=?)"""
+        select_query=f"""SELECT month,consume,price,billoftype FROM BILL WHERE(year=? and billof=?) order by month asc """
         # select_query=f"""SELECT * FROM BILL """
         self.db_cursor.execute(select_query,(yil,fatura_tipi))
         values=self.db_cursor.fetchall()
@@ -69,7 +74,6 @@ class Db_Engine:
 
         return return_value
 
-
     @property
     def db_last_row_id(self):
         last_row=self.db_cursor.lastrowid
@@ -83,6 +87,7 @@ class Db_Engine:
 
 
 
+
 if __name__=='__main__':
     db_engine=Db_Engine()
     # db_engine.db_connect()
@@ -90,22 +95,36 @@ if __name__=='__main__':
     # { year: "2021", month: "ocak", consume: "23", price: "33", billof: "elektrik", billoftype: "none" }
     # db_engine.db_insert_values(int("2024"),"ocak",int('44'),int('45'),'elektrik','none')
     def add_some_values():
-        month = ["ocak", "subat", "mart", "nisan", "nisan", "mayis", "haziran", "tammuz", "agustos", "eylul", "ekim",
-                 "kasim", "aralik"]
+#         month = [1,
+                    # 2,
+                    # 3,
+                    # 4,
+                    # 5,
+                    # 6,
+                    # 7,
+                    # 8,
+                    # 9,
+                    # 10,
+                    # 11,12]
         bill_type = ["elektrik", "su", "gaz", "telekominikasyon"]
         bill_type_of = ["cable", "mobile"]
         # print(random.choice(month))
         for i in range(30):
             bill_of_type = random.choice(bill_type)
             if bill_of_type == 'telekominikasyon':
-                db_engine.db_insert_values(random.randint(2020, 2023), random.choice(month), random.randint(1, 100),
-                                           random.randint(1, 100), 'telekominikasyon', random.choice(bill_type_of))
+                val={   "year": "2018",  "month": "1",   "consume": "1",  "price": "11",  "billof": "elektrik",  "billoftype": "none" }
+                insert_values={'year':random.randint(2018, 2023),'month':random.randint(1, 12),'consume':random.randint(1, 100),'price':random.randint(1, 100),
+                               'billof':'telekominikasyon','billoftype':random.choice(bill_type_of)}
+                # print(insert_values)
+                db_engine.db_insert_values(insert_values)
             else:
-                db_engine.db_insert_values(random.randint(2020, 2023), random.choice(month), random.randint(1, 100),
-                                           random.randint(1, 100), bill_of_type, 'none')
-    # add_some_values()
+                insert_values = {'year': random.randint(2018, 2023), 'month': random.randint(1, 12),
+                                 'consume': random.randint(1, 100), 'price': random.randint(1, 100),
+                                 'billof': bill_of_type, 'billoftype': 'none'}
+                db_engine.db_insert_values(insert_values)
+    add_some_values()
 
-    db_engine.db_getvalues('su',2022)
-    db_engine.db_last_row_id
+    # db_engine.db_getvalues('su',2022)
+    # db_engine.db_last_row_id
     db_engine.db_close
 

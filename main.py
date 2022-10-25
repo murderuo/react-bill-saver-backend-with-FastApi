@@ -22,38 +22,36 @@ db_engine = Db_Engine()
 class Bill(BaseModel):
     year:str
     month:str
-    consume:int
-    price:int
+    consume:str
+    price:str
     billof:str
     billoftype:str
-
 
 
 @app.get('/')
 async def index():
     return {'message':'success'}
 
-
 @app.get('/{billtype}/{year}')
 async def match_func(billtype,year:int):
     match billtype:
         case 'elektrik':
-            if year >= 2020 and year<2025:
+            if int(year) >= 2018 and int(year)<2025:
                 values = db_engine.db_getvalues(billtype, year)
                 return values
             return {'message': f'year must be grather than 2020 '}
         case 'su':
-            if year >= 2020 and year<2025:
+            if int(year) >= 2018 and int(year)<2025:
                 values = db_engine.db_getvalues(billtype, year)
                 return values
             return {'message':f'year must be grather than 2020 '}
         case 'gaz':
-            if year >= 2020 and year<2025:
+            if int(year) >= 2018 and int(year)<2025:
                 values = db_engine.db_getvalues(billtype, year)
                 return values
             return {'message': f'year must be grather than 2020 '}
         case 'telekominikasyon':
-            if year >= 2020 and year<2025:
+            if int(year) >= 2018 and int(year)<2025:
                 values = db_engine.db_getvalues(billtype, year)
                 return values
             return {'message': f'year must be grather than 2020 '}
@@ -96,7 +94,8 @@ async def match_func(billtype,year:int):
 @app.post('/add_new_bill')
 async def add_bill(bill:Bill):
     # db_engine.db_insert_values(year,month,tuketim,fatura_tutari,fatura_tipi,alt_fatura_tipi)
-    # print(bill)
+    # print(type(bill))
+    print(bill.year)
     messsage=db_engine.db_insert_values(bill)
     return {'message':f'{messsage}'}
 
